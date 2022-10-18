@@ -6,6 +6,13 @@
     android:orientation="vertical"
     tools:context=".ui.cliente.NewCliente">
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageClient"
+        android:layout_gravity="center"
+        tools:src="@tools:sample/avatars" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtNombre"
         android:layout_width="match_parent"

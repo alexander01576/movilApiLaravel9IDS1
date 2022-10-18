@@ -1,19 +1,32 @@
 package com.uttec.app9ids1.ui.cliente
 
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import com.uttec.app9ids1.R
 import com.uttec.app9ids1.databinding.FragmentNewClienteBinding
 import com.uttec.app9ids1.extras.Models
+import com.uttec.app9ids1.extras.Rutas
 import com.uttec.app9ids1.extras.VariablesGlobales
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.io.IOException
+import java.util.jar.Manifest
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +49,8 @@ class NewCliente : Fragment() {
     // TODO: Rename and change types of parameters
     private var json_cliente: String? = null
     private var param2: String? = null
+
+    private var urlReal:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,20 +83,48 @@ class NewCliente : Fragment() {
             binding.btnEliminar.isVisible = false
         }
 
+        Picasso
+            .get()
+            .load("https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg")
+            .fit()
+            .into(binding.imageClient)
+
         binding.btnGuardar.setOnClickListener {
 
             var url = VariablesGlobales.url_save_client
 
-            val formBody: RequestBody = FormBody.Builder()
-                .add("id", id_cliente.toString() )
-                .add("nombre", binding.txtNombre.editText?.text.toString() )
-                .add("ap_pat", binding.txtApPat.editText?.text.toString() )
-                .add("ap_mat", binding.txtApMat.editText?.text.toString() )
-                .add("email", binding.txtEmail.editText?.text.toString() )
-                .add("celular", binding.txtCelular.editText?.text.toString() )
-                .add("estatus", binding.txtStatus.editText?.text.toString() )
+            val formBody: RequestBody
 
-                .build()
+            if (urlReal != null) {
+
+                var arch = File(urlReal)
+
+                formBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("imagen",
+                        arch.name,
+                        arch.asRequestBody("image/*".toMediaTypeOrNull())
+                    )
+                    .addFormDataPart("id", id_cliente.toString())
+                    .addFormDataPart("nombre", binding.txtNombre.editText?.text.toString())
+                    .addFormDataPart("ap_pat", binding.txtApPat.editText?.text.toString() )
+                    .addFormDataPart("ap_mat", binding.txtApMat.editText?.text.toString() )
+                    .addFormDataPart("email", binding.txtEmail.editText?.text.toString() )
+                    .addFormDataPart("celular", binding.txtCelular.editText?.text.toString() )
+                    .addFormDataPart("estatus", binding.txtStatus.editText?.text.toString() )
+                    .build()
+            } else {
+
+                formBody = FormBody.Builder()
+                    .add("id", id_cliente.toString())
+                    .add("nombre", binding.txtNombre.editText?.text.toString())
+                    .add("ap_pat", binding.txtApPat.editText?.text.toString())
+                    .add("ap_mat", binding.txtApMat.editText?.text.toString())
+                    .add("email", binding.txtEmail.editText?.text.toString())
+                    .add("celular", binding.txtCelular.editText?.text.toString())
+                    .add("estatus", binding.txtStatus.editText?.text.toString())
+
+                    .build()
+            }
 
             val request = Request
                 .Builder()
@@ -146,7 +189,66 @@ class NewCliente : Fragment() {
             }
         }
 
+        binding.imageClient.setOnClickListener{
+            requestPermission()
+        }
+
         return view
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){ isGranted ->
+
+        if (isGranted){
+            pickPhotoFromGallery()
+        }else{
+            Toast.makeText(
+                requireActivity().baseContext,
+                "Permission denied",
+                Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun requestPermission() {
+        // Verificaremos el nivel de API para solicitar los permisos
+        // en tiempo de ejecución
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            when {
+
+                ContextCompat.checkSelfPermission(
+                    requireActivity().baseContext,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    pickPhotoFromGallery()
+                }
+
+                else -> requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }else {
+            // Se llamará a la función para APIs 22 o inferior
+            // Esto debido a que se aceptaron los permisos
+            // al momento de instalar la aplicación
+            pickPhotoFromGallery()
+        }
+    }
+
+    private fun pickPhotoFromGallery() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        startForActivityResult.launch(intent)
+    }
+
+    private val startForActivityResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ){ result ->
+        if (result.resultCode == Activity.RESULT_OK){
+            val data = result.data?.data
+
+            urlReal = Rutas().getRealPathFromURI(requireActivity().baseContext, data!!)
+
+            binding.imageClient.setImageURI(data)
+        }
     }
 
     companion object {
