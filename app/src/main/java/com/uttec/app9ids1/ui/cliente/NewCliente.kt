@@ -79,15 +79,33 @@ class NewCliente : Fragment() {
             binding.txtEmail.editText?.setText(objCliente.email)
             binding.txtCelular.editText?.setText(objCliente.celular.toString())
             binding.txtStatus.editText?.setText(objCliente.estatus)
+
+            var urlImage:String = "https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg"
+
+            if (objCliente.imagen != null){
+                urlImage = VariablesGlobales.url_app + objCliente.imagen?.replace("public/","storage/")
+            }
+
+
+            Picasso
+                .get()
+                .load(urlImage)
+                .fit()
+                .into(binding.imageClient)
+
         } else {
             binding.btnEliminar.isVisible = false
+
+            Picasso
+                .get()
+                .load("https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg")
+                .fit()
+                .into(binding.imageClient)
         }
 
-        Picasso
-            .get()
-            .load("https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg")
-            .fit()
-            .into(binding.imageClient)
+
+
+
 
         binding.btnGuardar.setOnClickListener {
 

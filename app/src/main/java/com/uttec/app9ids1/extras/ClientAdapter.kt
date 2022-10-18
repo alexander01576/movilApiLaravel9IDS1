@@ -3,11 +3,13 @@ package com.uttec.app9ids1.extras
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import com.uttec.app9ids1.R
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -24,7 +26,9 @@ class ClientAdapter (private val dataSet: Array<Models.Cliente>) :
 
         val txtNombre: TextView
         val txtEmail: TextView
-        var imgClient: TextView
+        val imgClient: ImageView
+
+
 
         init {
             // Define click listener for the ViewHolder's View.
@@ -58,16 +62,32 @@ class ClientAdapter (private val dataSet: Array<Models.Cliente>) :
             val bundle = bundleOf("json_cliente" to json_cliente)
 
             navController.navigate(R.id.nav_newCliente, bundle)
+
             //navController.popBackStack(R.id.nav_gallery, false)
             //println("Hola: " + dataSet[position])
         }
 
         viewHolder.txtNombre.text = dataSet[position]?.nombre
         viewHolder.txtEmail.text = dataSet[position]?.email
+
         //val formatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale("en", "US"))
         //val formatter: NumberFormat = DecimalFormat("$#,##0.00")
-
         //viewHolder.txtPrecio.text = formatter.format(dataSet[position]?.price)
+
+        if(dataSet[position]?.imagen != null){
+            Picasso
+                .get()
+                .load(VariablesGlobales.url_app + dataSet[position]?.imagen?.replace("public/","storage/"))
+                .fit()
+                .into(viewHolder.imgClient)
+        } else {
+            Picasso
+                .get()
+                .load("https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg")
+                .fit()
+                .into(viewHolder.imgClient)
+        }
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)
