@@ -28,8 +28,6 @@ class ClientAdapter (private val dataSet: Array<Models.Cliente>) :
         val txtEmail: TextView
         val imgClient: ImageView
 
-
-
         init {
             // Define click listener for the ViewHolder's View.
             txtNombre = view.findViewById(R.id.txtNombre)

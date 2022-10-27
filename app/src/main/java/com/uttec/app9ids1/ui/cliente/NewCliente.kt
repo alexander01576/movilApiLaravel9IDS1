@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -45,6 +46,9 @@ class NewCliente : Fragment() {
 
     private var id_cliente:Int = 0
 
+    //Variable global tipos
+    private var id_tipo: Int? = null
+
 
     // TODO: Rename and change types of parameters
     private var json_cliente: String? = null
@@ -66,6 +70,10 @@ class NewCliente : Fragment() {
     ): View? {
         _binding = FragmentNewClienteBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        //Invocacion de la funcion para obtener los tipos de transporte
+        obtenerTipos()
+
 
         if(json_cliente != null){
             var objGson = Gson()
@@ -129,6 +137,7 @@ class NewCliente : Fragment() {
                     .addFormDataPart("email", binding.txtEmail.editText?.text.toString() )
                     .addFormDataPart("celular", binding.txtCelular.editText?.text.toString() )
                     .addFormDataPart("estatus", binding.txtStatus.editText?.text.toString() )
+                    .addFormDataPart("id_tipo", id_tipo.toString())
                     .build()
             } else {
 
@@ -140,7 +149,7 @@ class NewCliente : Fragment() {
                     .add("email", binding.txtEmail.editText?.text.toString())
                     .add("celular", binding.txtCelular.editText?.text.toString())
                     .add("estatus", binding.txtStatus.editText?.text.toString())
-
+                    .add("id_tipo", id_tipo.toString())
                     .build()
             }
 
@@ -268,6 +277,52 @@ class NewCliente : Fragment() {
             binding.imageClient.setImageURI(data)
         }
     }
+
+    private fun obtenerTipos() {
+        var url = VariablesGlobales.url_get_tipos
+        val request = Request.Builder().url(url).get().build()
+        val client = OkHttpClient()
+        var objGson = Gson()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                println("Fallo en la peticion de tipos: " + e.message.toString())
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val respuesta = response.body?.string()
+
+                println("Valores de Tipos:" + respuesta)
+
+                var tipos: Array<Models.Tipos>?;
+
+                try {
+                    tipos = objGson.fromJson(respuesta, Array<Models.Tipos>::class.java)
+                }
+                catch (ex: Exception) {
+                    tipos = null
+                }
+
+                if(tipos != null) {
+                    val adapter: ArrayAdapter<Models.Tipos> = ArrayAdapter<Models.Tipos>(
+                        requireActivity().baseContext,
+                        android.R.layout.simple_dropdown_item_1line,
+                        tipos!!
+                    )
+                    activity?.runOnUiThread {
+                        binding.cbACTipo.setAdapter(adapter)
+                        binding.cbACTipo.setOnItemClickListener {
+                            adapterView, view, i, l -> id_tipo = tipos?.get(i)?.id
+                            println("El tipo seleccionado es: " + id_tipo)
+                        }
+                        binding.progressBarCyclic.visibility = View.GONE
+                        binding.cbTipo.visibility = View.VISIBLE
+                    }
+                }
+            }
+        })
+    }
+
 
     companion object {
         /**

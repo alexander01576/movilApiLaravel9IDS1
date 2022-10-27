@@ -105,6 +105,34 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar_cyclic"
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:visibility="visible"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:id="@+id/cbTipo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:visibility="gone"
+        android:padding="20dp"
+        android:hint="Tipo">
+
+        <AutoCompleteTextView
+            android:id="@+id/cbACTipo"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

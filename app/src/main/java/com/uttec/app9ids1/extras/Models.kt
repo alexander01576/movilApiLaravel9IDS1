@@ -17,4 +17,13 @@ class Models {
         var estatus: String,
         var imagen: String
         )
+
+    data class Tipos(
+        var id: Int,
+        var name: String
+    ){
+        override fun toString(): String {
+            return id.toString() + ": " + name
+        }
+    }
 }
