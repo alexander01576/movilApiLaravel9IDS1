@@ -47,7 +47,7 @@ class NewCliente : Fragment() {
     private var id_cliente:Int = 0
 
     //Variable global tipos
-    private var id_tipo: Int? = null
+    private var id_Tipo: Int? = 0
 
 
     // TODO: Rename and change types of parameters
@@ -87,6 +87,7 @@ class NewCliente : Fragment() {
             binding.txtEmail.editText?.setText(objCliente.email)
             binding.txtCelular.editText?.setText(objCliente.celular.toString())
             binding.txtStatus.editText?.setText(objCliente.estatus)
+            binding.cbACTipo.setText(objCliente.nombreTransporte)
 
             var urlImage:String = "https://www.magma.mx/wp-content/plugins/lightbox/images/No-image-found.jpg"
 
@@ -111,10 +112,6 @@ class NewCliente : Fragment() {
                 .into(binding.imageClient)
         }
 
-
-
-
-
         binding.btnGuardar.setOnClickListener {
 
             var url = VariablesGlobales.url_save_client
@@ -137,7 +134,7 @@ class NewCliente : Fragment() {
                     .addFormDataPart("email", binding.txtEmail.editText?.text.toString() )
                     .addFormDataPart("celular", binding.txtCelular.editText?.text.toString() )
                     .addFormDataPart("estatus", binding.txtStatus.editText?.text.toString() )
-                    .addFormDataPart("id_tipo", id_tipo.toString())
+                    .addFormDataPart("id_Tipo", id_Tipo.toString())
                     .build()
             } else {
 
@@ -149,7 +146,7 @@ class NewCliente : Fragment() {
                     .add("email", binding.txtEmail.editText?.text.toString())
                     .add("celular", binding.txtCelular.editText?.text.toString())
                     .add("estatus", binding.txtStatus.editText?.text.toString())
-                    .add("id_tipo", id_tipo.toString())
+                    .add("id_Tipo", id_Tipo.toString())
                     .build()
             }
 
@@ -312,8 +309,8 @@ class NewCliente : Fragment() {
                     activity?.runOnUiThread {
                         binding.cbACTipo.setAdapter(adapter)
                         binding.cbACTipo.setOnItemClickListener {
-                            adapterView, view, i, l -> id_tipo = tipos?.get(i)?.id
-                            println("El tipo seleccionado es: " + id_tipo)
+                            adapterView, view, i, l -> id_Tipo = tipos?.get(i)?.id
+                            println("El tipo seleccionado es: " + id_Tipo)
                         }
                         binding.progressBarCyclic.visibility = View.GONE
                         binding.cbTipo.visibility = View.VISIBLE

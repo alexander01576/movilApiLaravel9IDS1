@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         Picasso
             .get()
-            .load("https://carta.v-card.es/assets/images/user/login.png")
+            .load("https://parkimovil.com/img/iconos-productos/productos-estacionamiento-digital.png")
             .fit()
             .into(binding.imgLogin)
 

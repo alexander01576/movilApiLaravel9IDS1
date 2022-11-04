@@ -15,15 +15,16 @@ class Models {
         var email: String,
         var celular: Long,
         var estatus: String,
-        var imagen: String
-        )
+        var imagen: String?,
+        var nombreTransporte: String?
+    )
 
     data class Tipos(
         var id: Int,
-        var name: String
+        var nombre: String
     ){
         override fun toString(): String {
-            return id.toString() + ": " + name
+            return id.toString() + ": " + nombre
         }
     }
 }
