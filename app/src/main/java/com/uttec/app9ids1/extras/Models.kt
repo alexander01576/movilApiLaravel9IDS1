@@ -27,4 +27,11 @@ class Models {
             return id.toString() + ": " + nombre
         }
     }
+
+    data class Reservas (
+        var id_reserva: Int,
+        var estatus_reserva: String,
+        var fecha_reserva: String,
+        var nombre_cliente: String
+            )
 }
